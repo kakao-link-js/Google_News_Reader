@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools = "http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/splash_screen">
+
+    <fragment
+        android:id="@+id/list_screen"
+        android:name="com.kotlin.jaesungchi.rss_news_reader.Fragment.ListFragment"
+        android:label="London screen"
+        tools:layout="@layout/fragment_list">
+        <action
+            android:id="@+id/action_list_screen_to_web_screen"
+            app:destination="@id/web_screen"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/splash_screen"
+        android:name="com.kotlin.jaesungchi.rss_news_reader.Fragment.SplashFragment"
+        android:label="Paris screen"
+        tools:layout="@layout/fragment_splash">
+        <action
+            android:id="@+id/action_splash_screen_to_list_screen"
+            app:destination="@id/list_screen"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/web_screen"
+        android:name="com.kotlin.jaesungchi.rss_news_reader.Fragment.WebFragment"
+        android:label="Italy screen"
+        tools:layout="@layout/fragment_web">
+    </fragment>
+</navigation>
