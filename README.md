@@ -8,3 +8,7 @@
 minSdkLevel : 21
 
 targetSdkLevel : 27
+
+## 구조
+
+![구조계획](https://user-images.githubusercontent.com/37828448/77165194-2cd66000-6af5-11ea-8f90-f2db6452e40b.png)
