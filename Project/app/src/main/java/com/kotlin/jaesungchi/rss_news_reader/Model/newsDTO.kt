@@ -7,4 +7,5 @@ data class newsDTO(
     val title : String,
     val link : String,
     val pubDate : String,
-    val imageLink : String? = null)
+    val imageLink : String? = null,
+    val tags : ArrayList<String> =  ArrayList())
