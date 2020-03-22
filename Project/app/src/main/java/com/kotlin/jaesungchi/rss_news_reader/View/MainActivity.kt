@@ -1,7 +1,8 @@
-package com.kotlin.jaesungchi.rss_news_reader
+package com.kotlin.jaesungchi.rss_news_reader.View
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.kotlin.jaesungchi.rss_news_reader.R
 
 class MainActivity : AppCompatActivity() {
 

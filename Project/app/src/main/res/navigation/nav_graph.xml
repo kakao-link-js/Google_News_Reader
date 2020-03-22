@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/list_screen"
-        android:name="com.kotlin.jaesungchi.rss_news_reader.Fragment.ListFragment"
+        android:name="com.kotlin.jaesungchi.rss_news_reader.View.ListFragment"
         android:label="London screen"
         tools:layout="@layout/fragment_list">
         <action
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/web_screen"
-        android:name="com.kotlin.jaesungchi.rss_news_reader.Fragment.WebFragment"
+        android:name="com.kotlin.jaesungchi.rss_news_reader.View.WebFragment"
         android:label="Italy screen"
         tools:layout="@layout/fragment_web">
     </fragment>

@@ -7,8 +7,8 @@ import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
  콜백함수를 인자로 받아 결과를 콜백으로 돌려준다.
  */
 class DataModel (internal var mModelCallBacks: ModelCallBacks) {
-    private var newsDatas : ArrayList<newsDTO>? = null
-    fun addNewsDatas(newData : newsDTO) {
+    private var newsDatas : ArrayList<NewsDTO>? = null
+    fun addNewsDatas(newData : NewsDTO) {
         if(newsDatas == null)
             newsDatas = ArrayList()
 

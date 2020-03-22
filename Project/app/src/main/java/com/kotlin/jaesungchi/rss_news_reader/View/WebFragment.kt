@@ -1,4 +1,4 @@
-package com.kotlin.jaesungchi.rss_news_reader.Fragment
+package com.kotlin.jaesungchi.rss_news_reader.View
 
 import android.os.Bundle
 import android.view.LayoutInflater
