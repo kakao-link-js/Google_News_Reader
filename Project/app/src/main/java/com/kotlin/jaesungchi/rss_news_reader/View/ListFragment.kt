@@ -11,7 +11,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.Presenter.NewsPresenter
 import com.kotlin.jaesungchi.rss_news_reader.R
-import com.kotlin.jaesungchi.rss_news_reader.ViewUtil.ListRvAdapter
 
 class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
@@ -25,12 +24,15 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         mNewsPresenter = NewsPresenter(this)
         mRecyclerView = view.findViewById(R.id.recycler_view)
         mRecyclerView!!.layoutManager = LinearLayoutManager(view.context)
+        mRecyclerView!!.setHasFixedSize(true)
 
         return view
     }
 
     fun updateList(list:ArrayList<NewsDTO>){
-        val listAdapter = context?.let { ListRvAdapter(it,list) }
+        val listAdapter = context?.let {
+            ListRvAdapter(it, list)
+        }
         mRecyclerView!!.adapter = listAdapter
         mRecyclerView!!.scrollToPosition(0)
     }

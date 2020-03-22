@@ -5,6 +5,7 @@ package com.kotlin.jaesungchi.rss_news_reader.Model
 
 data class NewsDTO(
     val title : String,
+    val content : String,
     val link : String,
     val pubDate : String,
     val imageLink : String? = null,
