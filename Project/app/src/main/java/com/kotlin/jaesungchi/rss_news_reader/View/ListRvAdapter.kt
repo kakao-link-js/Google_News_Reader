@@ -37,12 +37,15 @@ class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>, val 
             newsimage.setImageResource(R.drawable.rssicon)
             newsTitle.text = news.title
             newsContent.text = news.content
-            if(news.tags.size > 0)
+            if(news.tags.size > 0) {
                 newsTag1.text = news.tags[0]
-            if(news.tags.size > 1)
+            }
+            if(news.tags.size > 1) {
                 newsTag2.text = news.tags[1]
-            if(news.tags.size > 2)
+            }
+            if(news.tags.size > 2) {
                 newsTag3.text = news.tags[2]
+            }
             itemView.setOnClickListener { itemClick(news) }
         }
     }
