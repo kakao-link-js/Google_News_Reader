@@ -19,10 +19,9 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
     fun downloadData(){
         CoroutineScope(Dispatchers.Default).async {
             val url = URL("https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko")
-            val doc : Document
             val dbf = DocumentBuilderFactory.newInstance()
             val db = dbf.newDocumentBuilder()
-            doc = db.parse(InputSource(url.openStream()))
+            val doc = db.parse(InputSource(url.openStream()))
             doc.documentElement.normalize()
             val itemNodeList = doc.getElementsByTagName("item")
 
@@ -32,6 +31,8 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                 val title = element.getElementsByTagName("title").item(0).childNodes.item(0).nodeValue
                 val links = element.getElementsByTagName("link").item(0).childNodes.item(0).nodeValue
                 val pubDate = element.getElementsByTagName("pubDate").item(0).childNodes.item(0).nodeValue
+                val imageLink : String
+
                 CoroutineScope(Dispatchers.Main).launch {//MainThread에 업데이트를 한다.
                     mModel.addNewsData(NewsDTO(title,links,links,pubDate,null,ArrayList()))
                 }

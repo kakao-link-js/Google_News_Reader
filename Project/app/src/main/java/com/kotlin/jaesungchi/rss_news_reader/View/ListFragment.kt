@@ -5,7 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -32,7 +34,12 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
     fun updateList(list:ArrayList<NewsDTO>){
         val listAdapter = context?.let {
-            ListRvAdapter(it, list)
+            ListRvAdapter(it, list){
+                news ->
+                var bundle = Bundle()
+                bundle.putString("link",news.link)
+                view?.let { it1 -> Navigation.findNavController(it1).navigate(R.id.action_list_screen_to_web_screen,bundle) }
+            }
         }
         mRecyclerView!!.adapter = listAdapter
         mRecyclerView!!.scrollToPosition(0)

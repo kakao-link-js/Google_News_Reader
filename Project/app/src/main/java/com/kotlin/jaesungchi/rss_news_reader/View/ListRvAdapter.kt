@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.R
 
-class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>) : RecyclerView.Adapter<ListRvAdapter.Holder>(){
+class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>, val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(){
 
     override fun getItemCount(): Int {
         return itemList.size
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder?.bind(itemList[position],context)
+        holder?.bind(itemList[position])
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -33,7 +33,7 @@ class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>) : Re
         val newsTag2 = itemView.findViewById<TextView>(R.id.itemTag2)
         val newsTag3 = itemView.findViewById<TextView>(R.id.itemTag3)
 
-        fun bind(news : NewsDTO, context : Context){
+        fun bind(news : NewsDTO){
             newsimage.setImageResource(R.drawable.rssicon)
             newsTitle.text = news.title
             newsContent.text = news.content
@@ -43,6 +43,7 @@ class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>) : Re
                 newsTag2.text = news.tags[1]
             if(news.tags.size > 2)
                 newsTag3.text = news.tags[2]
+            itemView.setOnClickListener { itemClick(news) }
         }
     }
 }
