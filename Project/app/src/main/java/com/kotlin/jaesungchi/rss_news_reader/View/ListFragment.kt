@@ -1,6 +1,7 @@
 package com.kotlin.jaesungchi.rss_news_reader.View
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import com.kotlin.jaesungchi.rss_news_reader.R
 
 class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
-    private var mNewsPresenter : NewsPresenter? = null
+    private var mNewsPresenter = NewsPresenter(this)
     private var mRecyclerView : RecyclerView? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -25,7 +26,7 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         mRecyclerView = view.findViewById(R.id.recycler_view)
         mRecyclerView!!.layoutManager = LinearLayoutManager(view.context)
         mRecyclerView!!.setHasFixedSize(true)
-
+        mNewsPresenter.downloadData()
         return view
     }
 
@@ -38,8 +39,8 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
     }
 
     override fun onRefresh() {
-        //새로 고침시 발생하는 코드
-
+        mNewsPresenter.clearData()
+        mNewsPresenter.downloadData()
         view!!.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).isRefreshing = false
     }
 }
