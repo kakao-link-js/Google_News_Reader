@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.R
 
@@ -22,10 +23,10 @@ class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>, val 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(context).inflate(R.layout.list_rv_item,parent,false)
-        return Holder(view)
+        return Holder(view,context)
     }
 
-    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    inner class Holder(itemView: View,context : Context) : RecyclerView.ViewHolder(itemView){
         val newsimage = itemView.findViewById<ImageView>(R.id.itemImage)
         val newsTitle = itemView.findViewById<TextView>(R.id.itemTitle)
         val newsContent  = itemView.findViewById<TextView>(R.id.itemContent)
@@ -34,7 +35,10 @@ class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>, val 
         val newsTag3 = itemView.findViewById<TextView>(R.id.itemTag3)
 
         fun bind(news : NewsDTO){
-            newsimage.setImageResource(R.drawable.rssicon)
+            Glide.with(context).load(news.imageLink)
+                .placeholder(R.drawable.loader)
+                .error(R.drawable.error)
+                .into(newsimage)
             newsTitle.text = news.title
             newsContent.text = news.content
             if(news.tags.size > 0) {
