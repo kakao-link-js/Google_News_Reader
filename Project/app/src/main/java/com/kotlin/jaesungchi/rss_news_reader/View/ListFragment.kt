@@ -11,6 +11,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.kotlin.jaesungchi.rss_news_reader.LINK_WORD
 import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.Presenter.NewsPresenter
 import com.kotlin.jaesungchi.rss_news_reader.R
@@ -37,7 +38,7 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
             ListRvAdapter(it, list){
                 news ->
                 var bundle = Bundle()
-                bundle.putString("link",news.link)
+                bundle.putString(LINK_WORD,news.link)
                 view?.let { it1 -> Navigation.findNavController(it1).navigate(R.id.action_list_screen_to_web_screen,bundle) }
             }
         }

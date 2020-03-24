@@ -7,7 +7,6 @@ data class NewsDTO(
     var title : String,
     var content : String,
     var link : String,
-    var pubDate : String,
     var imageLink : String,
     var tags : ArrayList<String> =  ArrayList()
 )

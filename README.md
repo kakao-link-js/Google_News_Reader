@@ -1,13 +1,23 @@
-# Rss_Reader
+# Google Rss News Viewer :newspaper:
+
 ![imge](https://img.shields.io/badge/ProjectType-SingleStudy-green) ![imge](https://img.shields.io/badge/Language-Kotlin-yellow) ![imge](https://img.shields.io/badge/Tools-AndroidStudio-blue)
 
-코틀린을 이용해 Rss 뉴스 리더를 만들어보는 프로젝트 입니다.
+## 프로그램 소개
 
-# 프로젝트 설정
+- 구글에서 RSS로 제공되는 뉴스목록을 볼 수 있습니다.
+- 뉴스 리스트에서 썸네일, 제목, 본문, 주요키워드 3개를 미리 볼 수 있습니다.
 
 minSdkLevel : 21
 
 targetSdkLevel : 27
+
+## 주요 기술 요소
+
+#### MVP 패턴 적용
+
+#### Glide 사용
+
+#### Coroutine 사용
 
 ## 구조
 

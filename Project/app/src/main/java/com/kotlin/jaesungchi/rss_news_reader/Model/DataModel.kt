@@ -1,6 +1,5 @@
 package com.kotlin.jaesungchi.rss_news_reader.Model
 
-import android.util.Log
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
 
 /*
@@ -8,18 +7,18 @@ import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
  콜백함수를 인자로 받아 결과를 콜백으로 돌려준다.
  */
 class DataModel (private var mModelCallBacks: ModelCallBacks) {
-    private var newsDatas : ArrayList<NewsDTO>? = null
+    private var newsData : ArrayList<NewsDTO>? = null
 
     fun clearNewsData(){
-        newsDatas = null
+        newsData = null
     }
 
     fun addNewsData(newData : NewsDTO) {
-        if(newsDatas == null)
-            newsDatas = ArrayList()
+        if(newsData == null)
+            newsData = ArrayList()
 
-        newsDatas!!.add(newData)
+        newsData!!.add(newData)
         //콜백함수를 통해 데이터가 업데이트 된것을 알려준다.
-        mModelCallBacks.onModelUpdated(newsDatas!!)
+        mModelCallBacks.onModelUpdated(newsData!!)
     }
 }

@@ -18,15 +18,15 @@ class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>, val 
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder?.bind(itemList[position])
+        holder.bind(itemList[position])
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(context).inflate(R.layout.list_rv_item,parent,false)
-        return Holder(view,context)
+        return Holder(view)
     }
 
-    inner class Holder(itemView: View,context : Context) : RecyclerView.ViewHolder(itemView){
+    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val newsimage = itemView.findViewById<ImageView>(R.id.itemImage)
         val newsTitle = itemView.findViewById<TextView>(R.id.itemTitle)
         val newsContent  = itemView.findViewById<TextView>(R.id.itemContent)
