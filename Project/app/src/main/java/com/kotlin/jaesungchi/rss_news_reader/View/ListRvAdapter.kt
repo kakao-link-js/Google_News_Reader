@@ -1,6 +1,7 @@
 package com.kotlin.jaesungchi.rss_news_reader.View
 
 import android.content.Context
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.R
 
-class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>, val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(){
+class ListRvAdapter(val context: Context, var itemList: ArrayList<NewsDTO>, val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(){
 
     override fun getItemCount(): Int {
         return itemList.size
@@ -43,12 +44,15 @@ class ListRvAdapter(val context: Context, val itemList: ArrayList<NewsDTO>, val 
             newsContent.text = news.content
             if(news.tags.size > 0) {
                 newsTag1.text = news.tags[0]
+                newsTag1.visibility = View.VISIBLE
             }
             if(news.tags.size > 1) {
                 newsTag2.text = news.tags[1]
+                newsTag2.visibility = View.VISIBLE
             }
             if(news.tags.size > 2) {
                 newsTag3.text = news.tags[2]
+                newsTag3.visibility = View.VISIBLE
             }
             itemView.setOnClickListener { itemClick(news) }
         }

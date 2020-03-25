@@ -1,5 +1,6 @@
 package com.kotlin.jaesungchi.rss_news_reader.Presenter
 
+import android.app.ProgressDialog
 import android.util.Log
 import com.bumptech.glide.load.HttpException
 import com.kotlin.jaesungchi.rss_news_reader.*
@@ -17,43 +18,98 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 
 class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
-    private val mModel : DataModel = DataModel(this)
 
-    private fun getNewsData(link : String){
+    private val mModel : DataModel = DataModel(this)
+    private val TAG = "NewPresenter"
+
+    private fun getNewsData(links : ArrayList<String>){
+        Log.d(TAG,"getNewsData Start")
         CoroutineScope(Dispatchers.Default).launch {
-            var newNews = NewsDTO("","",link,"",ArrayList())
-            var con = Jsoup.connect(link)
-            var statusCode = con.ignoreHttpErrors(true).execute().statusCode()
-            if(statusCode != 200)
-                return@launch
-            var doc = con.get()
-            var ogTags = doc.select(OG_BASE_WORD)
-            for(i in ogTags){
-                var text = i.attr(OG_PROPERTY_WORD)
-                if(OG_IMAGE_WORD == text)
-                    newNews.imageLink = i.attr(OG_CONTENT_WORD)
-                else if (OG_DESCRIPTION_WORD == text)
-                    newNews.content = i.attr(OG_CONTENT_WORD)
-                else if (OG_TITLE_WORD == text)
-                    newNews.title = i.attr(OG_CONTENT_WORD)
-            }
-            newNews.tags = calculateKeywordinContent(newNews.content)
-            //내용이나 제목이 제대로 Parsing 되지 않은 경우는 걸러낸다.
-            if(!newNews.title.isNullOrEmpty() && !newNews.content.isNullOrEmpty()) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    mModel.addNewsData(newNews)  //MainThread에 업데이트를 한다.
+            for(link in links) {
+                var newNews = NewsDTO("", "", link, "", ArrayList())
+                var con = Jsoup.connect(link)
+                var statusCode = con.ignoreHttpErrors(true).execute().statusCode()
+                if (statusCode.toString()[0] != '2') //2로시작하는 응답은 성공
+                    continue
+                var doc = con.get()
+                var ogTags = doc.select(OG_BASE_WORD)
+                for (i in ogTags) {
+                    when (i.attr(OG_PROPERTY_WORD)) {
+                        OG_IMAGE_WORD -> newNews.imageLink = i.attr(OG_CONTENT_WORD)
+                        OG_DESCRIPTION_WORD -> newNews.content = i.attr(OG_CONTENT_WORD)
+                        OG_TITLE_WORD -> newNews.title = i.attr(OG_CONTENT_WORD)
+                    }
                 }
+                if (newNews.title.isNullOrBlank() && newNews.content.isNullOrBlank())
+                    continue
+                newNews.tags = calculateKeywordinContent(newNews.content)
+                mModel.addNewsData(newNews)  //MainThread에 업데이트를 한다
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                mModel.updateView()
             }
         }
+        Log.d(TAG,"getNewsData End")
     }
 
+    //Content를 통해 Tag를 추출하여 반환하는
     private fun calculateKeywordinContent(content : String) : ArrayList<String>{
-        val arr = content.split(' ').map{ it.toString() }.sorted()
-        Log.e("test",arr.joinToString(" "))
-        return ArrayList()
+        Log.d(TAG,"calculateKeyword Start")
+        var regex = """[^\uAC00-\uD7A30-9a-zA-Z\s]""".toRegex()
+        var arr = content.split(' ').map{ it.replace(regex,"").trim()}.sorted()
+        var countArr = ArrayList<Int>()
+        var wordArr = ArrayList<String>()
+        var beforeWord = arr[0]
+        for(word in arr)
+            if(!word.isNullOrBlank()) {
+                beforeWord = word
+                break
+            }
+        var countNow = 1
+        for(i in 1 until arr.size ){
+            if(arr[i].isNullOrBlank() || arr[i].length < 2)
+                continue
+            if(beforeWord == arr[i]){
+                countNow++
+                continue
+            }
+            //countArr 이랑 비교해서 ArrayList 에 들어가야함
+            if(wordArr.size == 0){
+                wordArr.add(beforeWord)
+                countArr.add(countNow)
+            }
+            else {
+                for (i in wordArr.size - 1 downTo 0) {
+                    if (countNow <= countArr[i]) {
+                        if (wordArr.size < 3) {
+                            wordArr.add(beforeWord)
+                            countArr.add(countNow)
+                        }
+                        break
+                    }
+                    if (i != 2) {
+                        if (wordArr.size <= i + 1) {
+                            wordArr.add(wordArr[i])
+                            countArr.add(countArr[i])
+                        } else {
+                            wordArr[i + 1] = wordArr[i]
+                            countArr[i + 1] = countArr[i]
+                        }
+                    }
+                    wordArr[i] = beforeWord
+                    countArr[i] = countNow
+                }
+            }
+            beforeWord = arr[i]
+            countNow = 1
+        }
+        Log.d(TAG,"calculateKeyword End")
+        Log.d(TAG,wordArr.toString())
+        return wordArr
     }
 
     fun downloadData(){
+        Log.d(TAG,"downloadData Start")
         CoroutineScope(Dispatchers.Default).launch {
             var newsLinks = ArrayList<String>()
             var url = URL(GOOGLE_RSS_URL)
@@ -69,17 +125,17 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                 val link = element.getElementsByTagName(LINK_WORD).item(0).childNodes.item(0).nodeValue
                 newsLinks.add(link)
             }
-            for(link in newsLinks)
-                getNewsData(link)
+            getNewsData(newsLinks)
         }
+        Log.d(TAG,"downloadData End")
     }
+
 
     fun clearData(){
         mModel.clearNewsData()
     }
 
-    override fun onModelUpdated(newsDatas: ArrayList<NewsDTO>) {
-        listFragment.updateList(newsDatas)
+    override fun onModelUpdated(newsData: ArrayList<NewsDTO>) {
+        listFragment.updateList(newsData)
     }
-
 }

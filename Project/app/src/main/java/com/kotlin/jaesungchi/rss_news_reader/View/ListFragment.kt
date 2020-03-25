@@ -1,5 +1,6 @@
 package com.kotlin.jaesungchi.rss_news_reader.View
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,37 +18,59 @@ import com.kotlin.jaesungchi.rss_news_reader.Presenter.NewsPresenter
 import com.kotlin.jaesungchi.rss_news_reader.R
 
 class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
-
+    private var TAG = "ListFragment"
     private var mNewsPresenter = NewsPresenter(this)
     private var mRecyclerView : RecyclerView? = null
+    private var mListAdapter : ListRvAdapter? = null
+    private var asyncDialog : ProgressDialog? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d(TAG,"onCreateView Start")
         var view = inflater.inflate(R.layout.fragment_list,container,false)
         view.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).setOnRefreshListener(this)
 
-        mNewsPresenter = NewsPresenter(this)
         mRecyclerView = view.findViewById(R.id.recycler_view)
         mRecyclerView!!.layoutManager = LinearLayoutManager(view.context)
         mRecyclerView!!.setHasFixedSize(true)
-        mNewsPresenter.downloadData()
+        initProgressDiaglog()
+        if(mListAdapter == null) { //프래그먼트 첫 생성시
+            setListAdapter(ArrayList())
+            asyncDialog!!.show()
+            mNewsPresenter = NewsPresenter(this)
+            mNewsPresenter.downloadData()
+            mRecyclerView!!.adapter = mListAdapter
+        }
+
+        Log.d(TAG,"onCreateView End")
         return view
     }
 
+    private fun initProgressDiaglog(){
+        asyncDialog = ProgressDialog(context)
+        asyncDialog!!.setMessage("뉴스를 다운받고 있습니다...")
+    }
+
     fun updateList(list:ArrayList<NewsDTO>){
-        val listAdapter = context?.let {
-            ListRvAdapter(it, list){
-                news ->
+        setListAdapter(list)
+        mRecyclerView!!.adapter = mListAdapter
+        asyncDialog!!.dismiss()
+    }
+
+    fun setListAdapter(list : ArrayList<NewsDTO>){
+        mListAdapter= context?.let {
+            ListRvAdapter(it, list) { news ->
                 var bundle = Bundle()
-                bundle.putString(LINK_WORD,news.link)
-                view?.let { it1 -> Navigation.findNavController(it1).navigate(R.id.action_list_screen_to_web_screen,bundle) }
+                bundle.putString(LINK_WORD, news.link)
+                view?.let { it ->
+                    Navigation.findNavController(it).navigate(R.id.action_list_screen_to_web_screen, bundle)
+                }
             }
         }
-        mRecyclerView!!.adapter = listAdapter
-        mRecyclerView!!.scrollToPosition(0)
     }
 
     override fun onRefresh() {
         mNewsPresenter.clearData()
+        asyncDialog!!.show()
         mNewsPresenter.downloadData()
         view!!.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).isRefreshing = false
     }
