@@ -28,11 +28,11 @@
             android:id="@+id/centerImage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
+            android:layout_weight="7"
             android:adjustViewBounds="false"
             android:contentDescription=""
             android:scaleType="fitEnd"
-            app:srcCompat="@drawable/rssicon" />
+            app:srcCompat="@drawable/icon" />
 
         <Space
             android:layout_width="0dp"
@@ -45,7 +45,7 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:scaleType="fitEnd"
-            app:srcCompat="@drawable/rssicon" />
+            app:srcCompat="@drawable/kotlin" />
 
     </LinearLayout>
 
