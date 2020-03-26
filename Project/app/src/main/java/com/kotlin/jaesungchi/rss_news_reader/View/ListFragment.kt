@@ -69,9 +69,8 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
     }
 
     override fun onRefresh() {
-        mNewsPresenter.clearData()
         asyncDialog!!.show()
-        mNewsPresenter.downloadData()
+        mNewsPresenter.clearData()
         view!!.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).isRefreshing = false
     }
 }

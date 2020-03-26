@@ -40,8 +40,8 @@ class ListRvAdapter(val context: Context, var itemList: ArrayList<NewsDTO>, val 
                 .placeholder(R.drawable.loader)
                 .error(R.drawable.error)
                 .into(newsimage)
-            newsTitle.text = news.title
-            newsContent.text = news.content
+            newsTitle.text = news.title.trim()
+            newsContent.text = news.content.trim()
             if(news.tags.size > 0) {
                 newsTag1.text = news.tags[0]
                 newsTag1.visibility = View.VISIBLE
