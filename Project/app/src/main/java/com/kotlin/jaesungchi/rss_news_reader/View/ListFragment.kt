@@ -36,17 +36,17 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         if(mListAdapter == null) { //프래그먼트 첫 생성시
             setListAdapter(ArrayList())
             asyncDialog!!.show()
-            mNewsPresenter = NewsPresenter(this)
-            mNewsPresenter.downloadData()
-            mRecyclerView!!.adapter = mListAdapter
         }
-
+        mRecyclerView!!.adapter = mListAdapter
+        mNewsPresenter = NewsPresenter(this)
+        mNewsPresenter.downloadData()
         Log.d(TAG,"onCreateView End")
         return view
     }
 
     private fun initProgressDiaglog(){
         asyncDialog = ProgressDialog(context)
+        asyncDialog!!.setCancelable(false)
         asyncDialog!!.setMessage("뉴스를 다운받고 있습니다...")
     }
 

@@ -1,8 +1,6 @@
 package com.kotlin.jaesungchi.rss_news_reader.Presenter
 
-import android.app.ProgressDialog
 import android.util.Log
-import com.bumptech.glide.load.HttpException
 import com.kotlin.jaesungchi.rss_news_reader.*
 import com.kotlin.jaesungchi.rss_news_reader.View.ListFragment
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
@@ -12,7 +10,6 @@ import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import org.w3c.dom.Element
 import org.xml.sax.InputSource
-import java.net.HttpCookie
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -27,27 +24,27 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
         CoroutineScope(Dispatchers.Default).launch {
             for(link in links) {
                 var newNews = NewsDTO("", "", link, "", ArrayList())
-                var con = Jsoup.connect(link)
+                var con = Jsoup.connect(link).ignoreContentType(true).timeout(3000)
                 var statusCode = con.ignoreHttpErrors(true).execute().statusCode()
                 if (statusCode.toString()[0] != '2') //2로시작하는 응답은 성공
                     continue
                 var doc = con.get()
+                newNews.title = doc.title()
                 var ogTags = doc.select(OG_BASE_WORD)
                 for (i in ogTags) {
                     when (i.attr(OG_PROPERTY_WORD)) {
                         OG_IMAGE_WORD -> newNews.imageLink = i.attr(OG_CONTENT_WORD)
                         OG_DESCRIPTION_WORD -> newNews.content = i.attr(OG_CONTENT_WORD)
-                        OG_TITLE_WORD -> newNews.title = i.attr(OG_CONTENT_WORD)
                     }
                 }
-                if (newNews.title.isNullOrBlank() && newNews.content.isNullOrBlank())
+                if (newNews.title.isNullOrBlank() || newNews.content.isNullOrBlank())
                     continue
                 newNews.tags = calculateKeywordinContent(newNews.content)
-                mModel.addNewsData(newNews)  //MainThread에 업데이트를 한다
+                CoroutineScope(Dispatchers.Main).launch {
+                    mModel.addNewsData(newNews)  //MainThread에 업데이트를 한다
+                }
             }
-            CoroutineScope(Dispatchers.Main).launch {
-                mModel.updateView()
-            }
+
         }
         Log.d(TAG,"getNewsData End")
     }
@@ -56,7 +53,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
     private fun calculateKeywordinContent(content : String) : ArrayList<String>{
         Log.d(TAG,"calculateKeyword Start")
         var regex = """[^\uAC00-\uD7A30-9a-zA-Z\s]""".toRegex()
-        var arr = content.split(' ').map{ it.replace(regex,"").trim()}.sorted()
+        var arr = content.replace(regex," ").split(' ').map{ it.trim()}.sorted()
         var countArr = ArrayList<Int>()
         var wordArr = ArrayList<String>()
         var beforeWord = arr[0]

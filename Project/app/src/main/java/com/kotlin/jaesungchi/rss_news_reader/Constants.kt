@@ -7,7 +7,6 @@ const val OG_PROPERTY_WORD = "property"
 const val OG_CONTENT_WORD = "content"
 const val OG_DESCRIPTION_WORD = "og:description"
 const val OG_IMAGE_WORD = "og:image"
-const val OG_TITLE_WORD = "og:title"
 
 const val ITEM_WORD = "item"
 const val LINK_WORD = "link"

@@ -22,11 +22,7 @@ class DataModel (private var mModelCallBacks: ModelCallBacks) {
             newsData = ArrayList()
 
         newsData!!.add(newData)
+        mModelCallBacks.onModelUpdated(newsData!!)
         Log.d(TAG,"addNewsData End")
-    }
-
-    fun updateView(){
-        //콜백함수를 통해 데이터가 업데이트 된것을 알려준다.
-        newsData?.let { mModelCallBacks.onModelUpdated(it) }
     }
 }
