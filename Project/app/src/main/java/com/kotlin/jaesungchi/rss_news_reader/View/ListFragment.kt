@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -70,7 +69,7 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
     override fun onRefresh() {
         asyncDialog!!.show()
-        mNewsPresenter.clearData()
+        mNewsPresenter.refreshData()
         view!!.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).isRefreshing = false
     }
 }
