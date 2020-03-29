@@ -8,10 +8,6 @@
 - 뉴스 리스트에서 썸네일, 제목, 본문, 주요키워드 3개를 미리 볼 수 있습니다.
 - 뉴스 리스트에서 클릭을하면 바로 뉴스 사이트로 연결됩니다.
 
-minSdkLevel : 21
-
-targetSdkLevel : 27
-
 ## 주요 기술 요소
 
 #### MVP 패턴 적용
@@ -30,6 +26,6 @@ targetSdkLevel : 27
 
 - http Parsing을 위해 Jsoup을 활용.
 
-## 구조
+## 클래스 구조
 
-![구조계획](https://user-images.githubusercontent.com/37828448/77165194-2cd66000-6af5-11ea-8f90-f2db6452e40b.png)
+![classDesign](https://user-images.githubusercontent.com/37828448/77842389-64679b00-71cc-11ea-9fcf-3560a1e9679b.png)
