@@ -22,7 +22,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
     private var TAG = "NewsPresenter"
     private val mModel : DataModel = DataModel(this)
 
-    fun refreshData(){
+    override fun onRefreshModel() {
         mModel.clearNewsData()
         downloadData()
     }
@@ -31,6 +31,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
         listFragment.updateList(newsData)
     }
 
+    //구글 Rss에 나온 링크에 접속하여 Link들만 파싱하는 메소드
     fun downloadData(){
         CoroutineScope(Dispatchers.Default).launch {
             var newsLinks = ArrayList<String>()
@@ -51,6 +52,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
         }
     }
 
+    //NewsData의 Link마다 접소가여 OpenGraph의 값을 파싱하는 메소드
     private fun getNewsData(links : ArrayList<String>){
         CoroutineScope(Dispatchers.Default).launch {
             for(link in links) {
@@ -103,11 +105,12 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                 countNow++
                 continue
             }
-            if(wordArr.size == 0){
+            //단어가 앞과 달라진 경우
+            if(wordArr.size == 0){ //아무것도 없는 경우 추가.
                 wordArr.add(beforeWord)
                 countArr.add(countNow)
             }
-            else {
+            else { //있는경우 맨 뒤글자부터 비교하며 넘어간다.
                 for (i in wordArr.size - 1 downTo 0) {
                     if (countNow <= countArr[i]) {
                         if (wordArr.size < 3) {
