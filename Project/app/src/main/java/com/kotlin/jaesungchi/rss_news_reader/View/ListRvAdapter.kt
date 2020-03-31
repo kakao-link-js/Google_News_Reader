@@ -27,6 +27,10 @@ class ListRvAdapter(val context: Context, var itemList: ArrayList<NewsDTO>, val 
         return Holder(view)
     }
 
+    fun add(data : NewsDTO){
+        itemList.add(data)
+    }
+
     inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val newsimage = itemView.findViewById<ImageView>(R.id.itemImage)
         val newsTitle = itemView.findViewById<TextView>(R.id.itemTitle)

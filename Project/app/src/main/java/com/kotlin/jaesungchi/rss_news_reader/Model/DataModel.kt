@@ -22,7 +22,6 @@ class DataModel (private var mModelCallBacks: ModelCallBacks) {
 
     fun clearNewsData(){
         newsData!!.clear()
-        mModelCallBacks.onModelUpdated(newsData!!)
     }
 
     fun addNewsData(newData : NewsDTO) {
@@ -31,7 +30,7 @@ class DataModel (private var mModelCallBacks: ModelCallBacks) {
             newsData = ArrayList()
 
         newsData!!.add(newData)
-        mModelCallBacks.onModelUpdated(newsData!!)
+        mModelCallBacks.onModelUpdated(newData)
         Log.d(TAG,"addNewsData End")
     }
 }

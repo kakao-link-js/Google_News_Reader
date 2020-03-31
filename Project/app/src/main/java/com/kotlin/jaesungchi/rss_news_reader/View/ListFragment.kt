@@ -21,7 +21,7 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
     private var mNewsPresenter = NewsPresenter(this)
     private var mRecyclerView : RecyclerView? = null
     private var mListAdapter : ListRvAdapter? = null
-    private var asyncDialog : ProgressDialog? = null
+    var asyncDialog : ProgressDialog? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG,"onCreateView Start")
@@ -33,8 +33,7 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         mRecyclerView!!.setHasFixedSize(true)
         initProgressDiaglog()
         if(mListAdapter == null) { //프래그먼트 첫 생성시
-            setListAdapter(ArrayList())
-            asyncDialog!!.show()
+            initListAdapter()
         }
         mRecyclerView!!.adapter = mListAdapter
         mNewsPresenter = NewsPresenter(this)
@@ -49,15 +48,14 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         asyncDialog!!.setMessage("뉴스를 다운받고 있습니다...")
     }
 
-    fun updateList(list:ArrayList<NewsDTO>){
-        setListAdapter(list)
-        mRecyclerView!!.adapter = mListAdapter
-        asyncDialog!!.dismiss()
+    fun updateList(data: NewsDTO){
+        mListAdapter!!.add(data)
+        mListAdapter!!.notifyDataSetChanged()
     }
 
-    fun setListAdapter(list : ArrayList<NewsDTO>){
+    fun initListAdapter(){
         mListAdapter= context?.let {
-            ListRvAdapter(it, list) { news ->
+            ListRvAdapter(it, ArrayList()) { news ->
                 var bundle = Bundle()
                 bundle.putString(LINK_WORD, news.link)
                 view?.let { it ->
@@ -68,7 +66,6 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
     }
 
     override fun onRefresh() {
-        asyncDialog!!.show()
         mNewsPresenter.onRefreshModel()
         view!!.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).isRefreshing = false
     }

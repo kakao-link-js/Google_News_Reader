@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.w3c.dom.Element
 import org.xml.sax.InputSource
+import java.io.IOException
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -21,19 +22,22 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
     private var TAG = "NewsPresenter"
     private val mModel : DataModel = DataModel(this)
+    private var coroutineScope = CoroutineScope(Dispatchers.Default)
 
     override fun onRefreshModel() {
         mModel.clearNewsData()
         downloadData()
     }
 
-    override fun onModelUpdated(newsData: ArrayList<NewsDTO>) {
+    override fun onModelUpdated(newsData: NewsDTO) {
         listFragment.updateList(newsData)
+        listFragment.asyncDialog!!.dismiss()
     }
 
     //구글 Rss에 나온 링크에 접속하여 Link들만 파싱하는 메소드
     fun downloadData(){
-        CoroutineScope(Dispatchers.Default).launch {
+        listFragment.asyncDialog!!.show()
+        coroutineScope.launch {
             var newsLinks = ArrayList<String>()
             var url = URL(GOOGLE_RSS_URL)
             var dbf = DocumentBuilderFactory.newInstance()
@@ -54,29 +58,33 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
     //NewsData의 Link마다 접소가여 OpenGraph의 값을 파싱하는 메소드
     private fun getNewsData(links : ArrayList<String>){
-        CoroutineScope(Dispatchers.Default).launch {
+        coroutineScope.launch {
             for(link in links) {
-                var newNews = NewsDTO("", "", link, "", ArrayList())
-                var ssl = SSLConnect() //인증서 에러 방지
-                ssl.postHttps(link,1000,1000)
-                var con = Jsoup.connect(link).ignoreContentType(true).timeout(1000)
-                var statusCode = con.ignoreHttpErrors(true).execute().statusCode()
-                if (statusCode.toString()[0] != '2') //2로시작하는 응답은 성공
-                    continue
-                var doc = con.get()
-                newNews.title = doc.title()
-                var ogTags = doc.select(OG_BASE_WORD)
-                for (i in ogTags) {
-                    when (i.attr(OG_PROPERTY_WORD)) {
-                        OG_IMAGE_WORD -> newNews.imageLink = i.attr(OG_CONTENT_WORD)
-                        OG_DESCRIPTION_WORD -> newNews.content = i.attr(OG_CONTENT_WORD)
+                try {
+                    var newNews = NewsDTO("", "", link, "", ArrayList())
+                    var ssl = SSLConnect() //인증서 에러 방지
+                    ssl.postHttps(link, 1000, 1000)
+                    var con = Jsoup.connect(link).ignoreContentType(true).timeout(1000)
+                    var statusCode = con.ignoreHttpErrors(true).execute().statusCode()
+                    if (statusCode.toString()[0] != '2') //2로시작하는 응답은 성공
+                        continue
+                    var doc = con.get()
+                    newNews.title = doc.title()
+                    var ogTags = doc.select(OG_BASE_WORD)
+                    for (i in ogTags) {
+                        when (i.attr(OG_PROPERTY_WORD)) {
+                            OG_IMAGE_WORD -> newNews.imageLink = i.attr(OG_CONTENT_WORD)
+                            OG_DESCRIPTION_WORD -> newNews.content = i.attr(OG_CONTENT_WORD)
+                        }
                     }
-                }
-                if (newNews.title.isNullOrBlank() || newNews.content.isNullOrBlank())
-                    continue
-                newNews.tags = getKeywordinContent(newNews.content)
-                CoroutineScope(Dispatchers.Main).launch {
-                    mModel.addNewsData(newNews)  //MainThread에 업데이트를 한다
+                    if (newNews.title.isNullOrBlank() || newNews.content.isNullOrBlank())
+                        continue
+                    newNews.tags = getKeywordinContent(newNews.content)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        mModel.addNewsData(newNews)  //MainThread에 업데이트를 한다
+                    }
+                }catch (e : IOException){
+                    Log.e("linkError",e.toString())
                 }
             }
 
@@ -111,25 +119,25 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                 countArr.add(countNow)
             }
             else { //있는경우 맨 뒤글자부터 비교하며 넘어간다.
-                for (i in wordArr.size - 1 downTo 0) {
-                    if (countNow <= countArr[i]) {
+                for (tempIndex in wordArr.size - 1 downTo 0) {
+                    if (countNow <= countArr[tempIndex]) {
                         if (wordArr.size < 3) {
                             wordArr.add(beforeWord)
                             countArr.add(countNow)
                         }
                         break
                     }
-                    if (i != 2) {
-                        if (wordArr.size <= i + 1) {
-                            wordArr.add(wordArr[i])
-                            countArr.add(countArr[i])
+                    if (tempIndex != 2) {
+                        if (wordArr.size <= tempIndex + 1) {
+                            wordArr.add(wordArr[tempIndex])
+                            countArr.add(countArr[tempIndex])
                         } else {
-                            wordArr[i + 1] = wordArr[i]
-                            countArr[i + 1] = countArr[i]
+                            wordArr[tempIndex + 1] = wordArr[tempIndex]
+                            countArr[tempIndex + 1] = countArr[tempIndex]
                         }
                     }
-                    wordArr[i] = beforeWord
-                    countArr[i] = countNow
+                    wordArr[tempIndex] = beforeWord
+                    countArr[tempIndex] = countNow
                 }
             }
             beforeWord = arr[i]
