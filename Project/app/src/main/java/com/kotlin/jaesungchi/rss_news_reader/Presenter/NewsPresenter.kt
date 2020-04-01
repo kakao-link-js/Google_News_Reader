@@ -11,6 +11,7 @@ import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.util.SSLConnect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.w3c.dom.Element
@@ -24,6 +25,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
     private var mListAdapter : ListRvAdapter?
     private var coroutineScope = CoroutineScope(Dispatchers.Default)
+    private var stopCoroutine = false
 
     init{
         mListAdapter= listFragment.context?.let {
@@ -44,6 +46,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
     fun onRefreshModel() {
         mListAdapter!!.clear()
+        stopCoroutine = true
         downloadData()
     }
 
@@ -70,6 +73,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                 val link = element.getElementsByTagName(LINK_WORD).item(0).childNodes.item(0).nodeValue
                 newsLinks.add(link)
             }
+            stopCoroutine = false
             getNewsData(newsLinks)
         }
     }
@@ -79,6 +83,8 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
         coroutineScope.launch {
             for(link in links) {
                 try {
+                    if(stopCoroutine)
+                        break
                     var newNews = NewsDTO("", "", link, "", ArrayList())
                     var ssl = SSLConnect() //인증서 에러 방지
                     ssl.postHttps(link, 1000, 1000)
@@ -95,7 +101,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                             OG_DESCRIPTION_WORD -> newNews.content = i.attr(OG_CONTENT_WORD)
                         }
                     }
-                    if (newNews.title.isNullOrBlank() || newNews.content.isNullOrBlank())
+                    if (newNews.title.isNullOrBlank() || newNews.content.isNullOrBlank() || stopCoroutine)
                         continue
                     newNews.tags = getKeywordinContent(newNews.content)
                     CoroutineScope(Dispatchers.Main).launch {
