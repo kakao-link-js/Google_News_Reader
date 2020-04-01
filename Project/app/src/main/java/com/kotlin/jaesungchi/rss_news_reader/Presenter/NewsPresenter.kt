@@ -1,10 +1,12 @@
 package com.kotlin.jaesungchi.rss_news_reader.Presenter
 
+import android.os.Bundle
 import android.util.Log
+import androidx.navigation.Navigation
 import com.kotlin.jaesungchi.rss_news_reader.*
 import com.kotlin.jaesungchi.rss_news_reader.View.ListFragment
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
-import com.kotlin.jaesungchi.rss_news_reader.Model.DataModel
+import com.kotlin.jaesungchi.rss_news_reader.Model.ListRvAdapter
 import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.util.SSLConnect
 import kotlinx.coroutines.CoroutineScope
@@ -20,17 +22,33 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
-    private var TAG = "NewsPresenter"
-    private val mModel : DataModel = DataModel(this)
+    private var mListAdapter : ListRvAdapter?
     private var coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    override fun onRefreshModel() {
-        mModel.clearNewsData()
+    init{
+        mListAdapter= listFragment.context?.let {
+            ListRvAdapter(it,this) { news ->
+                var bundle = Bundle()
+                bundle.putString(LINK_WORD, news.link)
+                listFragment.view?.let { it ->
+                    Navigation.findNavController(it)
+                        .navigate(R.id.action_list_screen_to_web_screen, bundle)
+                }
+            }
+        }
+    }
+
+    fun connectAdapter(){
+        listFragment.mRecyclerView!!.adapter = mListAdapter
+    }
+
+    fun onRefreshModel() {
+        mListAdapter!!.clear()
         downloadData()
     }
 
-    override fun onModelUpdated(newsData: NewsDTO) {
-        listFragment.updateList(newsData)
+    override fun onModelUpdated() {
+        mListAdapter!!.notifyDataSetChanged()
         listFragment.asyncDialog!!.dismiss()
     }
 
@@ -81,7 +99,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                         continue
                     newNews.tags = getKeywordinContent(newNews.content)
                     CoroutineScope(Dispatchers.Main).launch {
-                        mModel.addNewsData(newNews)  //MainThread에 업데이트를 한다
+                        mListAdapter!!.add(newNews)  //MainThread에 업데이트를 한다
                     }
                 }catch (e : IOException){
                     Log.e("linkError",e.toString())
