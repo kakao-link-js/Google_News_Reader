@@ -1,7 +1,12 @@
 package com.kotlin.jaesungchi.rss_news_reader.Presenter
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.navigation.Navigation
 import com.kotlin.jaesungchi.rss_news_reader.*
 import com.kotlin.jaesungchi.rss_news_reader.View.ListFragment
@@ -57,6 +62,11 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
     //구글 Rss에 나온 링크에 접속하여 Link들만 파싱하는 메소드
     fun downloadData(){
+        if(!checkNetworkState()){
+            Toast.makeText(listFragment.context,"인터넷 연결상태를 확인 해 주세요.",Toast.LENGTH_LONG).show()
+            listFragment.asyncDialog!!.dismiss()
+            return
+        }
         listFragment.asyncDialog!!.show()
         coroutineScope.launch {
             var newsLinks = ArrayList<String>()
@@ -83,6 +93,11 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
         coroutineScope.launch {
             for(link in links) {
                 try {
+                    if(!checkNetworkState()){
+                        Toast.makeText(listFragment.context,"인터넷 연결상태를 확인 해 주세요.",Toast.LENGTH_LONG).show()
+                        listFragment.asyncDialog!!.dismiss()
+                        break
+                    }
                     if(stopCoroutine)
                         break
                     var newNews = NewsDTO("", "", link, "", ArrayList())
@@ -168,5 +183,23 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
             countNow = 1
         }
         return wordArr
+    }
+
+    //인터넷 연결상태를 확인합니다.
+    fun checkNetworkState(): Boolean {
+        val connectivityManager =
+            listFragment.context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val nw = connectivityManager.activeNetwork ?: return false
+            val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+            return when {
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                else -> false
+            }
+        } else {
+            val nwInfo = connectivityManager.activeNetworkInfo ?: return false
+            return nwInfo.isConnected
+        }
     }
 }

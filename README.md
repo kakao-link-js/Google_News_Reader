@@ -28,4 +28,6 @@
 
 ## 클래스 구조
 
-![classDesign](https://user-images.githubusercontent.com/37828448/77842389-64679b00-71cc-11ea-9fcf-3560a1e9679b.png)
+![class](https://user-images.githubusercontent.com/37828448/78210167-49569d00-74e4-11ea-91c4-dee09541d3cf.png)
+
+Model 의 역할을 ListRecyclerAdapter에게 주어 처리하였습니다.
