@@ -31,3 +31,17 @@
 ![class](https://user-images.githubusercontent.com/37828448/78210167-49569d00-74e4-11ea-91c4-dee09541d3cf.png)
 
 Model 의 역할을 ListRecyclerAdapter에게 주어 처리하였습니다.
+
+## RSS 파싱
+
+- 구글 뉴스 ([https://](https://news.google.com/rss)[news.google.com/rss](https://news.google.com/rss)) 에서 item 별로 파싱하여 link를 들고 온 후, Jsoup을 통해 link에서 Html OpenGraph에 나와있는 썸네일과 본문 내용을 파싱하였습니다.
+
+- 통신은 비동기 통신을 위해 Coroutine을 사용하였습니다.
+
+## 이미지 로드
+
+- 뉴스의 썸네일 이미지를 불러오는 라이브러리로 Glide를 채택하였습니다.
+
+- Glide를 선택한 이유는, 이미지를 불러오는 라이브러리인 Picasso 와 Coil에 비교해 퍼포먼스가 매우 빠르기 때문에 선택했습니다. 
+
+- Coil이  위해 나와 경량이긴 하지만앱 자체가 현재 무겁게 돌아가는 것이 없고빠르게 뉴스이미지를 보여주기 위해 가장 빠른 를 선택하였습니다
