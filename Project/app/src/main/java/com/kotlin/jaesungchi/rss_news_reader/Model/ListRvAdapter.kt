@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
 import com.kotlin.jaesungchi.rss_news_reader.R
 
-class ListRvAdapter(val context: Context,val callbacks :ModelCallBacks ,val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(){
+class ListRvAdapter(val context: Context ,val callbacks :ModelCallBacks ,val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(){
 
     val itemList: ArrayList<NewsDTO> = ArrayList()
 

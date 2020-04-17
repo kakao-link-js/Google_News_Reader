@@ -25,8 +25,8 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         view.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).setOnRefreshListener(this)
 
         mRecyclerView = view.findViewById(R.id.recycler_view)
-        mRecyclerView!!.layoutManager = LinearLayoutManager(view.context)
-        mRecyclerView!!.setHasFixedSize(true)
+        mRecyclerView?.layoutManager = LinearLayoutManager(view.context)
+        mRecyclerView?.setHasFixedSize(true)
         initProgressDiaglog()
         mNewsPresenter = NewsPresenter(this)
         mNewsPresenter.connectAdapter()
@@ -37,12 +37,12 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
 
     private fun initProgressDiaglog(){
         asyncDialog = ProgressDialog(context)
-        asyncDialog!!.setCancelable(false)
-        asyncDialog!!.setMessage("뉴스를 다운받고 있습니다...")
+        asyncDialog?.setCancelable(false)
+        asyncDialog?.setMessage("뉴스를 다운받고 있습니다...")
     }
 
     override fun onRefresh() {
         mNewsPresenter.onRefreshModel()
-        view!!.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).isRefreshing = false
+        view?.findViewById<SwipeRefreshLayout>(R.id.swipe_layout)?.isRefreshing = false
     }
 }

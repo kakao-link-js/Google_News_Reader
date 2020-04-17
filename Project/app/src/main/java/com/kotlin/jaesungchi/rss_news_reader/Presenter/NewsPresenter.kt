@@ -33,7 +33,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
     private var stopCoroutine = false
 
     init{
-        mListAdapter= listFragment.context?.let {
+        mListAdapter = listFragment.context?.let {
             ListRvAdapter(it,this) { news ->
                 var bundle = Bundle()
                 bundle.putString(LINK_WORD, news.link)
@@ -46,28 +46,28 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
     }
 
     fun connectAdapter(){
-        listFragment.mRecyclerView!!.adapter = mListAdapter
+        listFragment.mRecyclerView?.adapter = mListAdapter
     }
 
     fun onRefreshModel() {
-        mListAdapter!!.clear()
+        mListAdapter?.clear()
         stopCoroutine = true
         downloadData()
     }
 
     override fun onModelUpdated() {
-        mListAdapter!!.notifyDataSetChanged()
-        listFragment.asyncDialog!!.dismiss()
+        mListAdapter?.notifyDataSetChanged()
+        listFragment.asyncDialog?.dismiss()
     }
 
     //구글 Rss에 나온 링크에 접속하여 Link들만 파싱하는 메소드
     fun downloadData(){
         if(!checkNetworkState()){
             Toast.makeText(listFragment.context,"인터넷 연결상태를 확인 해 주세요.",Toast.LENGTH_LONG).show()
-            listFragment.asyncDialog!!.dismiss()
+            listFragment.asyncDialog?.dismiss()
             return
         }
-        listFragment.asyncDialog!!.show()
+        listFragment.asyncDialog?.show()
         coroutineScope.launch {
             var newsLinks = ArrayList<String>()
             var url = URL(GOOGLE_RSS_URL)
@@ -95,7 +95,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                 try {
                     if(!checkNetworkState()){
                         Toast.makeText(listFragment.context,"인터넷 연결상태를 확인 해 주세요.",Toast.LENGTH_LONG).show()
-                        listFragment.asyncDialog!!.dismiss()
+                        listFragment.asyncDialog?.dismiss()
                         break
                     }
                     if(stopCoroutine)
@@ -120,7 +120,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                         continue
                     newNews.tags = getKeywordinContent(newNews.content)
                     CoroutineScope(Dispatchers.Main).launch {
-                        mListAdapter!!.add(newNews)  //MainThread에 업데이트를 한다
+                        mListAdapter?.add(newNews)  //MainThread에 업데이트를 한다
                     }
                 }catch (e : IOException){
                     Log.e("linkError",e.toString())
@@ -188,7 +188,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
     //인터넷 연결상태를 확인합니다.
     fun checkNetworkState(): Boolean {
         val connectivityManager =
-            listFragment.context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            listFragment.context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val nw = connectivityManager.activeNetwork ?: return false
             val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false

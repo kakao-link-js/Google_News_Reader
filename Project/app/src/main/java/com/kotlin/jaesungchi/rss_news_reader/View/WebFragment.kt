@@ -26,7 +26,7 @@ class WebFragment : Fragment(){
 
     inner class WebViewClientClass : WebViewClient(){
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-            view!!.loadUrl(url)
+            view?.loadUrl(url)
             return true
         }
     }
