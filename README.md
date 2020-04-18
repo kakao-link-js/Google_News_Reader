@@ -49,6 +49,6 @@ Model 의 역할을 ListRecyclerAdapter에게 주어 처리하였습니다.
 # Ver 1.0.0 의 보완해야할 점 
 
 - MVP 패턴 적용시 Presenter와 Fragment에 직접적으로 접근, View에 대한 인터페이스 제공 안함.
-- ?. 를 사용하지 않고 null 처리에 !!를 주로 사용함.
-- 뉴스 데이터 가져올시 비동기 처리하였지만, 결국엔 다 Load 된 후에 보여짐.
+- 뉴스 데이터 가져올시 비동기 처리하였지만, 결국엔 다 Load 된 후에 보여짐
+  - 다운받을 객체를 list가 아닌 각각으로 Coroutine을 돌려 해결함. 
 - Linear Layout을 사용함.

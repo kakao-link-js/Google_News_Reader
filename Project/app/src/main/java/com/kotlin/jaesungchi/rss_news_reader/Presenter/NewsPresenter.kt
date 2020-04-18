@@ -30,7 +30,6 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
     private var mListAdapter : ListRvAdapter?
     private var coroutineScope = CoroutineScope(Dispatchers.Default)
-    private var stopCoroutine = false
 
     init{
         mListAdapter = listFragment.context?.let {
@@ -51,7 +50,6 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
 
     fun onRefreshModel() {
         mListAdapter?.clear()
-        stopCoroutine = true
         downloadData()
     }
 
@@ -69,7 +67,6 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
         }
         listFragment.asyncDialog?.show()
         coroutineScope.launch {
-            var newsLinks = ArrayList<String>()
             var url = URL(GOOGLE_RSS_URL)
             var dbf = DocumentBuilderFactory.newInstance()
             var db = dbf.newDocumentBuilder()
@@ -81,32 +78,28 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                 val node = itemNodeList.item(index)
                 val element = node as Element
                 val link = element.getElementsByTagName(LINK_WORD).item(0).childNodes.item(0).nodeValue
-                newsLinks.add(link)
+                getNewsData(link)
             }
-            stopCoroutine = false
-            getNewsData(newsLinks)
         }
     }
 
     //NewsData의 Link마다 접소가여 OpenGraph의 값을 파싱하는 메소드
-    private fun getNewsData(links : ArrayList<String>){
+    private fun getNewsData(link : String){
         coroutineScope.launch {
-            for(link in links) {
                 try {
+                    //인터넷 연결 확인
                     if(!checkNetworkState()){
                         Toast.makeText(listFragment.context,"인터넷 연결상태를 확인 해 주세요.",Toast.LENGTH_LONG).show()
                         listFragment.asyncDialog?.dismiss()
-                        break
+                        return@launch
                     }
-                    if(stopCoroutine)
-                        break
                     var newNews = NewsDTO("", "", link, "", ArrayList())
                     var ssl = SSLConnect() //인증서 에러 방지
                     ssl.postHttps(link, 1000, 1000)
                     var con = Jsoup.connect(link).ignoreContentType(true).timeout(1000)
                     var statusCode = con.ignoreHttpErrors(true).execute().statusCode()
                     if (statusCode.toString()[0] != '2') //2로시작하는 응답은 성공
-                        continue
+                        return@launch
                     var doc = con.get()
                     newNews.title = doc.title()
                     var ogTags = doc.select(OG_BASE_WORD)
@@ -116,17 +109,15 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                             OG_DESCRIPTION_WORD -> newNews.content = i.attr(OG_CONTENT_WORD)
                         }
                     }
-                    if (newNews.title.isNullOrBlank() || newNews.content.isNullOrBlank() || stopCoroutine)
-                        continue
+                    if (newNews.title.isNullOrBlank() || newNews.content.isNullOrBlank())
+                        return@launch
                     newNews.tags = getKeywordinContent(newNews.content)
                     CoroutineScope(Dispatchers.Main).launch {
                         mListAdapter?.add(newNews)  //MainThread에 업데이트를 한다
                     }
-                }catch (e : IOException){
-                    Log.e("linkError",e.toString())
+                }catch (e : IOException) {
+                    Log.e("linkError", e.toString())
                 }
-            }
-
         }
     }
 
