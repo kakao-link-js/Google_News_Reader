@@ -49,6 +49,7 @@ Model 의 역할을 ListRecyclerAdapter에게 주어 처리하였습니다.
 # Ver 1.0.0 의 보완해야할 점 
 
 - MVP 패턴 적용시 Presenter와 Fragment에 직접적으로 접근, View에 대한 인터페이스 제공 안함.
+  - Google 에서 권장하는 Contract 인터페이스를 사용하여 상호간의 결합도를 떨어뜨림.
 - 뉴스 데이터 가져올시 비동기 처리하였지만, 결국엔 다 Load 된 후에 보여짐
   - 다운받을 객체를 list가 아닌 각각으로 Coroutine을 돌려 해결함. 
 - Linear Layout을 사용함.

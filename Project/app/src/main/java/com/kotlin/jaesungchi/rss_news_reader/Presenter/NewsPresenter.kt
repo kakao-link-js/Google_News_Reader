@@ -1,22 +1,14 @@
 package com.kotlin.jaesungchi.rss_news_reader.Presenter
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
-import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import androidx.navigation.Navigation
 import com.kotlin.jaesungchi.rss_news_reader.*
-import com.kotlin.jaesungchi.rss_news_reader.View.ListFragment
+import com.kotlin.jaesungchi.rss_news_reader.InterFaces.AdapterContract
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
-import com.kotlin.jaesungchi.rss_news_reader.Model.ListRvAdapter
+import com.kotlin.jaesungchi.rss_news_reader.InterFaces.MainContract
 import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.util.SSLConnect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.w3c.dom.Element
@@ -26,46 +18,25 @@ import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
 
-class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
-
-    private var mListAdapter : ListRvAdapter?
+class NewsPresenter() : ModelCallBacks,MainContract.Presenter{
+    override var adapterModel: AdapterContract.Model? = null
+    override var adapterView: AdapterContract.View? = null
+    override lateinit var view : MainContract.View
     private var coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    init{
-        mListAdapter = listFragment.context?.let {
-            ListRvAdapter(it,this) { news ->
-                var bundle = Bundle()
-                bundle.putString(LINK_WORD, news.link)
-                listFragment.view?.let { it ->
-                    Navigation.findNavController(it)
-                        .navigate(R.id.action_list_screen_to_web_screen, bundle)
-                }
-            }
-        }
-    }
-
-    fun connectAdapter(){
-        listFragment.mRecyclerView?.adapter = mListAdapter
-    }
-
-    fun onRefreshModel() {
-        mListAdapter?.clear()
+    override fun onRefreshModel() {
+        adapterModel?.clear()
         downloadData()
     }
 
     override fun onModelUpdated() {
-        mListAdapter?.notifyDataSetChanged()
-        listFragment.asyncDialog?.dismiss()
+        adapterView?.notifyAdapter()
+        view.stopDialog()
     }
 
     //구글 Rss에 나온 링크에 접속하여 Link들만 파싱하는 메소드
-    fun downloadData(){
-        if(!checkNetworkState()){
-            Toast.makeText(listFragment.context,"인터넷 연결상태를 확인 해 주세요.",Toast.LENGTH_LONG).show()
-            listFragment.asyncDialog?.dismiss()
-            return
-        }
-        listFragment.asyncDialog?.show()
+    override fun downloadData(){
+        view.runDialog()
         coroutineScope.launch {
             var url = URL(GOOGLE_RSS_URL)
             var dbf = DocumentBuilderFactory.newInstance()
@@ -87,12 +58,6 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
     private fun getNewsData(link : String){
         coroutineScope.launch {
                 try {
-                    //인터넷 연결 확인
-                    if(!checkNetworkState()){
-                        Toast.makeText(listFragment.context,"인터넷 연결상태를 확인 해 주세요.",Toast.LENGTH_LONG).show()
-                        listFragment.asyncDialog?.dismiss()
-                        return@launch
-                    }
                     var newNews = NewsDTO("", "", link, "", ArrayList())
                     var ssl = SSLConnect() //인증서 에러 방지
                     ssl.postHttps(link, 1000, 1000)
@@ -113,7 +78,7 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
                         return@launch
                     newNews.tags = getKeywordinContent(newNews.content)
                     CoroutineScope(Dispatchers.Main).launch {
-                        mListAdapter?.add(newNews)  //MainThread에 업데이트를 한다
+                        adapterModel?.add(newNews)  //MainThread에 업데이트를 한다
                     }
                 }catch (e : IOException) {
                     Log.e("linkError", e.toString())
@@ -174,23 +139,5 @@ class NewsPresenter(private var listFragment: ListFragment) : ModelCallBacks{
             countNow = 1
         }
         return wordArr
-    }
-
-    //인터넷 연결상태를 확인합니다.
-    fun checkNetworkState(): Boolean {
-        val connectivityManager =
-            listFragment.context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val nw = connectivityManager.activeNetwork ?: return false
-            val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
-            return when {
-                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                else -> false
-            }
-        } else {
-            val nwInfo = connectivityManager.activeNetworkInfo ?: return false
-            return nwInfo.isConnected
-        }
     }
 }

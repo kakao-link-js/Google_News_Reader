@@ -8,12 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.kotlin.jaesungchi.rss_news_reader.InterFaces.AdapterContract
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
 import com.kotlin.jaesungchi.rss_news_reader.R
 
-class ListRvAdapter(val context: Context ,val callbacks :ModelCallBacks ,val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(){
-
-    val itemList: ArrayList<NewsDTO> = ArrayList()
+class ListRvAdapter(val context: Context ,val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(),AdapterContract.View,AdapterContract.Model{
+    private var itemList: ArrayList<NewsDTO> = ArrayList()
 
     override fun getItemCount(): Int {
         return itemList.size
@@ -28,12 +28,17 @@ class ListRvAdapter(val context: Context ,val callbacks :ModelCallBacks ,val ite
         return Holder(view)
     }
 
-    fun add(data : NewsDTO){
-        itemList.add(data)
-        callbacks.onModelUpdated()
+    override fun notifyAdapter() {
+        notifyDataSetChanged()
     }
 
-    fun clear(){
+    override fun getItem(position: Int): NewsDTO = itemList[position]
+
+    override fun add(data : NewsDTO){
+        itemList.add(data)
+    }
+
+    override fun clear(){
         itemList.clear()
     }
 
