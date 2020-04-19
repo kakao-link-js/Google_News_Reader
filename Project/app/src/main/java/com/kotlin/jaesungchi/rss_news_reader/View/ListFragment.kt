@@ -23,7 +23,6 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener{
         Log.d(TAG,"onCreateView Start")
         var view = inflater.inflate(R.layout.fragment_list,container,false)
         view.findViewById<SwipeRefreshLayout>(R.id.swipe_layout).setOnRefreshListener(this)
-
         mRecyclerView = view.findViewById(R.id.recycler_view)
         mRecyclerView?.layoutManager = LinearLayoutManager(view.context)
         mRecyclerView?.setHasFixedSize(true)
