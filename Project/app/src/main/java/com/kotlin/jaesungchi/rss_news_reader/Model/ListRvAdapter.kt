@@ -51,9 +51,10 @@ class ListRvAdapter(val context: Context ,val itemClick : (NewsDTO) -> Unit) : R
         val newsTag3 = itemView.findViewById<TextView>(R.id.itemTag3)
 
         fun bind(news : NewsDTO){
-            Glide.with(context).load(news.imageLink)
-                .placeholder(R.drawable.loader)
-                .error(R.drawable.error)
+            Glide.with(context).load(news.imageLink) //이미지를 불러오고
+                .thumbnail(0.1f) // 썸네일을 먼저 다운 받는다.
+                .placeholder(R.drawable.loader) // 미리보기 이미지를 적용시킨다.
+                .error(R.drawable.error) //만약 이미지가 불러와지지 않는다면.
                 .into(newsimage)
             newsTitle.text = news.title.trim()
             newsContent.text = news.content.trim()

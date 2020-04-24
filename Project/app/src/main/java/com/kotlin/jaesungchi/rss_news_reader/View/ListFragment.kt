@@ -45,7 +45,7 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener,MainContrac
         }
         mRecyclerView.adapter = adapter
         presenter = NewsPresenter().apply{
-            view = this@ListFragment
+            mView = this@ListFragment
             adapterView = adapter
             adapterModel = adapter
         }

@@ -21,7 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 class NewsPresenter() : ModelCallBacks,MainContract.Presenter{
     override var adapterModel: AdapterContract.Model? = null
     override var adapterView: AdapterContract.View? = null
-    override lateinit var view : MainContract.View
+    override lateinit var mView : MainContract.View
     private var coroutineScope = CoroutineScope(Dispatchers.Default)
 
     override fun onRefreshModel() {
@@ -31,12 +31,12 @@ class NewsPresenter() : ModelCallBacks,MainContract.Presenter{
 
     override fun onModelUpdated() {
         adapterView?.notifyAdapter()
-        view.stopDialog()
+        mView.stopDialog()
     }
 
     //구글 Rss에 나온 링크에 접속하여 Link들만 파싱하는 메소드
     override fun downloadData(){
-        view.runDialog()
+        mView.runDialog()
         coroutineScope.launch {
             var url = URL(GOOGLE_RSS_URL)
             var dbf = DocumentBuilderFactory.newInstance()

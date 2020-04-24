@@ -12,7 +12,7 @@ interface MainContract{
     }
 
     interface Presenter{
-        var view : View
+        var mView : View
         var adapterModel : AdapterContract.Model?
         var adapterView : AdapterContract.View?
         fun downloadData()
