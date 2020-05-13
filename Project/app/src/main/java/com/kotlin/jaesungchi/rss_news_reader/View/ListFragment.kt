@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.MainContract
 import com.kotlin.jaesungchi.rss_news_reader.LINK_WORD
-import com.kotlin.jaesungchi.rss_news_reader.Model.ListRvAdapter
 import com.kotlin.jaesungchi.rss_news_reader.Presenter.NewsPresenter
 import com.kotlin.jaesungchi.rss_news_reader.R
 

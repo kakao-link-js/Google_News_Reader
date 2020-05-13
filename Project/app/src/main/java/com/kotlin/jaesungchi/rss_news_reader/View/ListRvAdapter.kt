@@ -1,4 +1,4 @@
-package com.kotlin.jaesungchi.rss_news_reader.Model
+package com.kotlin.jaesungchi.rss_news_reader.View
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.kotlin.jaesungchi.rss_news_reader.InterFaces.AdapterContract
-import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
+import com.kotlin.jaesungchi.rss_news_reader.Model.NewsDTO
 import com.kotlin.jaesungchi.rss_news_reader.R
 
 class ListRvAdapter(val context: Context ,val itemClick : (NewsDTO) -> Unit) : RecyclerView.Adapter<ListRvAdapter.Holder>(),AdapterContract.View,AdapterContract.Model{
@@ -36,6 +36,7 @@ class ListRvAdapter(val context: Context ,val itemClick : (NewsDTO) -> Unit) : R
 
     override fun add(data : NewsDTO){
         itemList.add(data)
+        notifyDataSetChanged()
     }
 
     override fun clear(){
