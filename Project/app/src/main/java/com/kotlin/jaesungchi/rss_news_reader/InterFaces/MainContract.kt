@@ -18,7 +18,6 @@ interface MainContract{
         var adapterModel : AdapterContract.Model?
         var adapterView : AdapterContract.View?
         fun onRefreshModel()
-        fun uploadAdapterData(News : NewsDTO)
         fun downloadData()
     }
 }

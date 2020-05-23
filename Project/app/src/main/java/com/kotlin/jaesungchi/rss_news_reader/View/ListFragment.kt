@@ -69,9 +69,10 @@ class ListFragment : Fragment(),SwipeRefreshLayout.OnRefreshListener,MainContrac
     }
 
     override fun stopDialog() {
+        asyncDialog.dismiss()
     }
 
     override fun runDialog() {
-        asyncDialog.dismiss()
+        asyncDialog.onStart()
     }
 }

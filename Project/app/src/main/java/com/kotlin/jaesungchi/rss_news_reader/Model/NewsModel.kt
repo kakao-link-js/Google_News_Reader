@@ -2,7 +2,7 @@ package com.kotlin.jaesungchi.rss_news_reader.Model
 
 import android.util.Log
 import com.kotlin.jaesungchi.rss_news_reader.*
-import com.kotlin.jaesungchi.rss_news_reader.Presenter.NewsPresenter
+import com.kotlin.jaesungchi.rss_news_reader.InterFaces.ModelCallBacks
 import com.kotlin.jaesungchi.rss_news_reader.util.SSLConnect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +14,7 @@ import java.io.IOException
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
-class NewsModel(val presenter: NewsPresenter){
+class NewsModel(val modelCallBack: ModelCallBacks){
     private var coroutineScope = CoroutineScope(Dispatchers.Default)
     //구글 Rss에 나온 링크에 접속하여 Link들만 파싱하는 메소드
     fun downloadData(){
@@ -59,7 +59,7 @@ class NewsModel(val presenter: NewsPresenter){
                     return@launch
                 newNews.tags = getKeywordinContent(newNews.content)
                 CoroutineScope(Dispatchers.Main).launch {
-                    presenter.uploadAdapterData(newNews) //MainThread에 업데이트를 한다
+                    modelCallBack.onModelUpdated(newNews) //MainThread에 업데이트를 한다
                 }
             }catch (e : IOException) {
                 Log.e("linkError", e.toString())
